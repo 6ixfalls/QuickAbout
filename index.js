@@ -189,8 +189,11 @@ function capitalizeFirstLetter(string) {
         addBadge(getBoostFlagForTimestamp(userData.data.premium_since), `Server boosting since ${moment(userData.data.premium_since).format("MMM D, YYYY")} (Estimated)`);
 
     let presence = await checkElement(".user-status");
-    if (lanyardData.data.data.listening_to_spotify) {
+    if (lanyardData.data.data.listening_to_spotify && lanyardData.data.data.activities.length == 1) {
         document.documentElement.style.setProperty("--status-bg", "#1db653");
+        (await checkElement(".user-status .title")).innerHTML = "Listening to Spotify";
+    } else if (lanyardData.data.data.activities.length == 0) {
+        (await checkElement(".user-status .title")).remove();
     }
 
     // username
