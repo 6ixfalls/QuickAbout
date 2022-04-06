@@ -2,6 +2,7 @@
 
 :root {
     --status-bg: #7289da;
+    --status-color: #fff;
 }
 
 body {
@@ -269,6 +270,21 @@ body {
     animation: animate 6s linear infinite;
     animation-delay: 0s;
     opacity: 1;
+}
+
+.status {
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    top: 140px;
+    left: 80px;
+}
+
+.status-rect {
+    rx: 4px;
+    stroke: #101320;
+    stroke-width: 4px;
+    fill: var(--status-color);
 }
 
 @keyframes animate {

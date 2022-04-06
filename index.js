@@ -18,7 +18,16 @@ const descriptions = {
     "bughunter_2": "Discord Bug Hunter",
     "developer": "Early Verified Bot Developer",
     "early_supporter": "Early Supporter",
+    "moderator": "Discord Certified Moderator"
 };
+
+const StatusMap = {
+    "online": "#43B581",
+    "idle": "#FAA61A",
+    "dnd": "#F04747",
+    "offline": "#747F8D",
+    "streaming": "#593695"
+}
 
 const checkElement = async selector => {
     while (document.querySelector(selector) === null) {
@@ -40,6 +49,7 @@ function getFlags(flag) {
     if (flag & 512) flags.push("early_supporter");
     if (flag & 16384) flags.push("bughunter_2");
     if (flag & 131072) flags.push("developer");
+    if (flag & 262144) flags.push("moderator");
 
     return flags;
 };
@@ -80,11 +90,7 @@ async function addBadge(badgeAsset, tooltip) {
     let currentTooltip;
 
     badge.addEventListener("mouseover", async () => {
-        if (!currentTooltip)
-            currentTooltip = tooltipNode.cloneNode(true);
-        else {
-            currentTooltip.ontransitionend = null;
-        }
+        currentTooltip = tooltipNode.cloneNode(true);
 
         currentTooltip.classList.add("fade-out");
         document.body.appendChild(currentTooltip);
@@ -98,12 +104,11 @@ async function addBadge(badgeAsset, tooltip) {
     badge.addEventListener("mouseout", () => {
         if (currentTooltip) {
             currentTooltip.classList.add("fade-out");
-            currentTooltip.addEventListener("transitionend", () => {
-                if (currentTooltip) {
-                    currentTooltip.remove();
-                    currentTooltip = null;
-                }
-            });
+            let oldTooltip = currentTooltip;
+            currentTooltip = null;
+            setTimeout(() => {
+                oldTooltip.remove();
+            }, 100);
         }
     });
 
@@ -118,11 +123,7 @@ async function addConnection(badgeAsset, tooltip) {
     let currentTooltip;
 
     badge.addEventListener("mouseover", async () => {
-        if (!currentTooltip)
-            currentTooltip = tooltipNode.cloneNode(true);
-        else {
-            currentTooltip.ontransitionend = null;
-        }
+        currentTooltip = tooltipNode.cloneNode(true);
 
         currentTooltip.classList.add("fade-out");
         document.body.appendChild(currentTooltip);
@@ -136,12 +137,11 @@ async function addConnection(badgeAsset, tooltip) {
     badge.addEventListener("mouseout", () => {
         if (currentTooltip) {
             currentTooltip.classList.add("fade-out");
-            currentTooltip.addEventListener("transitionend", () => {
-                if (currentTooltip) {
-                    currentTooltip.remove();
-                    currentTooltip = null;
-                }
-            });
+            let oldTooltip = currentTooltip;
+            currentTooltip = null;
+            setTimeout(() => {
+                oldTooltip.remove();
+            }, 100);
         }
     });
 
@@ -188,7 +188,6 @@ function capitalizeFirstLetter(string) {
     if (userData.data.user.banner)
         addBadge(getBoostFlagForTimestamp(userData.data.premium_since), `Server boosting since ${moment(userData.data.premium_since).format("MMM D, YYYY")} (Estimated)`);
 
-    let presence = await checkElement(".user-status");
     if (lanyardData.data.data.listening_to_spotify && lanyardData.data.data.activities.length == 1) {
         document.documentElement.style.setProperty("--status-bg", "#1db653");
         (await checkElement(".user-status .title")).innerHTML = "Listening to Spotify";
@@ -206,4 +205,6 @@ function capitalizeFirstLetter(string) {
     let bioText = await checkElement(".about .text");
     bioText.innerHTML = lanyardData.data.data.kv.bio.replace(/\\n/g, "<br>");
     linkify(bioText);
+
+    document.documentElement.style.setProperty("--status-color", StatusMap[lanyardData.data.data.discord_status]);
 })();
