@@ -1,6 +1,7 @@
 const CONSTANTS = {
     API_URL: "https://api.lanyard.rest/v1",
     WEBSOCKET_URL: "wss://api.lanyard.rest/socket",
+    ORIGIN: "wss://api.lanyard.rest",
     HEARTBEAT_PERIOD: 1000 * 30
 }
 
@@ -37,11 +38,12 @@ async function lanyard(opts) {
         });
 
         socket.addEventListener("message", ({ data, origin }) => {
-            if (!CONSTANTS.WEBSOCKET_URL.startsWith(origin)) return;
-            const { t, d } = JSON.parse(data)
+            if (origin == CONSTANTS.ORIGIN) {
+                const { t, d } = JSON.parse(data)
 
-            if (t === "INIT_STATE" || t === "PRESENCE_UPDATE") {
-                opts.onPresenceUpdate(d)
+                if (t === "INIT_STATE" || t === "PRESENCE_UPDATE") {
+                    opts.onPresenceUpdate(d)
+                }
             }
         });
 

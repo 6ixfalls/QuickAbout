@@ -1,3 +1,5 @@
+"use strict";
+
 const userid = "303173495918034945";
 
 const cdnURL = `https://dcdn.dstn.to/profile/${userid}/`;
@@ -60,47 +62,6 @@ const elapsedTime = (timestamp, endTime) => {
     )}:${("0" + secondsDifference).slice(-2)}`;
 };
 
-function escapeHtml(string) {
-    var str = '' + string
-    var match = /["'&<>]/.exec(str)
-    if (!match) {
-        return str
-    }
-    var escape
-    var html = ''
-    var index = 0
-    var lastIndex = 0
-    for (index = match.index; index < str.length; index++) {
-        switch (str.charCodeAt(index)) {
-            case 34: // "
-                escape = '&quot;'
-                break
-            case 38: // &
-                escape = '&amp;'
-                break
-            case 39: // '
-                escape = '&#39;'
-                break
-            case 60: // <
-                escape = '&lt;'
-                break
-            case 62: // >
-                escape = '&gt;'
-                break
-            default:
-                continue
-        }
-        if (lastIndex !== index) {
-            html += str.substring(lastIndex, index)
-        }
-        lastIndex = index + 1
-        html += escape
-    }
-    return lastIndex !== index
-        ? html + str.substring(lastIndex, index)
-        : html
-}
-
 function getFlags(flag) {
     let flags = [];
 
@@ -160,7 +121,7 @@ async function addBadge(badgeAsset, tooltip) {
         currentTooltip.classList.add("fade-out");
         document.body.appendChild(currentTooltip);
 
-        currentTooltip.querySelector(".text").innerHTML = escapeHtml(tooltip);
+        currentTooltip.querySelector(".text").innerHTML = _.escape(tooltip);
         currentTooltip.style = `top: ${getOffset(badge).top - currentTooltip.clientHeight - 25}px; left: ${getOffset(badge).left - (currentTooltip.clientWidth / 2) + 10}px;`;
 
         requestAnimationFrame(() => currentTooltip.classList.remove("fade-out"));
@@ -193,7 +154,7 @@ async function addConnection(badgeAsset, tooltip) {
         currentTooltip.classList.add("fade-out");
         document.body.appendChild(currentTooltip);
 
-        currentTooltip.querySelector(".text").innerHTML = escapeHtml(tooltip);
+        currentTooltip.querySelector(".text").innerHTML = _.escape(tooltip);
         currentTooltip.style = `top: ${getOffset(badge).top - currentTooltip.clientHeight - 15}px; left: ${getOffset(badge).left - (currentTooltip.clientWidth / 2) + 10}px;`;
 
         requestAnimationFrame(() => currentTooltip.classList.remove("fade-out"));
@@ -260,7 +221,7 @@ function capitalizeFirstLetter(string) {
             currentLargeTooltip.classList.add("fade-out");
             document.body.appendChild(currentLargeTooltip);
 
-            currentLargeTooltip.querySelector(".text").innerHTML = escapeHtml(large_tooltip);
+            currentLargeTooltip.querySelector(".text").innerHTML = _.escape(large_tooltip);
             currentLargeTooltip.style = `top: ${getOffset(mainImage).top - currentLargeTooltip.clientHeight - 25}px; left: ${getOffset(mainImage).left - (currentLargeTooltip.clientWidth / 2) + 10}px;`;
 
             requestAnimationFrame(() => currentLargeTooltip.classList.remove("fade-out"));
@@ -287,7 +248,7 @@ function capitalizeFirstLetter(string) {
             currentSmallTooltip.classList.add("fade-out");
             document.body.appendChild(currentSmallTooltip);
 
-            currentSmallTooltip.querySelector(".text").innerHTML = escapeHtml(small_tooltip);
+            currentSmallTooltip.querySelector(".text").innerHTML = _.escape(small_tooltip);
             currentSmallTooltip.style = `top: ${getOffset(smallImage).top - currentSmallTooltip.clientHeight - 25}px; left: ${getOffset(smallImage).left - (currentSmallTooltip.clientWidth / 2) + 10}px;`;
 
             requestAnimationFrame(() => currentSmallTooltip.classList.remove("fade-out"));
@@ -328,7 +289,7 @@ function capitalizeFirstLetter(string) {
                     large_tooltip = undefined;
                     small_tooltip = undefined;
 
-                    activityTitle.querySelector("span").innerHTML = escapeHtml(activity.name);
+                    activityTitle.querySelector("span").innerHTML = _.escape(activity.name);
                     if (timestampTimeout) {
                         clearInterval(timestampTimeout);
                     }
@@ -352,22 +313,22 @@ function capitalizeFirstLetter(string) {
                     }
 
                     if (activity.details) {
-                        details.innerHTML = escapeHtml(activity.details);
+                        details.innerHTML = _.escape(activity.details);
                         details.style.display = "block";
                     } else {
                         details.style.display = "none";
                     }
 
                     if (activity.state) {
-                        state.innerHTML = escapeHtml(activity.state);
+                        state.innerHTML = _.escape(activity.state);
                         state.style.display = "block";
                     } else {
                         state.style.display = "none";
                     }
 
                     if (activity.assets) {
-                        large_tooltip = escapeHtml(activity.assets.large_text);
-                        small_tooltip = escapeHtml(activity.assets.small_text);
+                        large_tooltip = _.escape(activity.assets.large_text);
+                        small_tooltip = _.escape(activity.assets.small_text);
 
                         if (activity.assets.large_image) {
                             mainImage.src = activity.assets.large_image.startsWith("mp:external/")
@@ -402,13 +363,13 @@ function capitalizeFirstLetter(string) {
                     smallImage.style.display = "none";
                     mainImage.src = presence.spotify.album_art_url;
 
-                    large_tooltip = escapeHtml(presence.spotify.song);
+                    large_tooltip = _.escape(presence.spotify.song);
                     small_tooltip = undefined;
 
-                    activityTitle.querySelector("span").innerHTML = escapeHtml(presence.spotify.song);
-                    details.innerHTML = "by " + escapeHtml(presence.spotify.artist);
+                    activityTitle.querySelector("span").innerHTML = _.escape(presence.spotify.song);
+                    details.innerHTML = "by " + _.escape(presence.spotify.artist);
                     details.style.display = "block";
-                    state.innerHTML = "on " + escapeHtml(presence.spotify.album);
+                    state.innerHTML = "on " + _.escape(presence.spotify.album);
                     state.style.display = "block";
                     if (timestampTimeout) {
                         clearInterval(timestampTimeout);
@@ -463,6 +424,6 @@ if (lanyardData.data.data.listening_to_spotify && lanyardData.data.data.activiti
 }*/
 
     // username
-    (await checkElement(".username")).innerHTML = escapeHtml(userData.data.user.username);
-    (await checkElement(".discriminator")).innerHTML = "#" + escapeHtml(userData.data.user.discriminator);
+    (await checkElement(".username")).innerHTML = _.escape(userData.data.user.username);
+    (await checkElement(".discriminator")).innerHTML = "#" + _.escape(userData.data.user.discriminator);
 })();
