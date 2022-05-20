@@ -36,7 +36,8 @@ async function lanyard(opts) {
             }, CONSTANTS.HEARTBEAT_PERIOD);
         });
 
-        socket.addEventListener("message", ({ data }) => {
+        socket.addEventListener("message", ({ data, origin }) => {
+            if (!CONSTANTS.WEBSOCKET_URL.startsWith(origin)) return;
             const { t, d } = JSON.parse(data)
 
             if (t === "INIT_STATE" || t === "PRESENCE_UPDATE") {

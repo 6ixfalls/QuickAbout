@@ -160,7 +160,7 @@ async function addBadge(badgeAsset, tooltip) {
         currentTooltip.classList.add("fade-out");
         document.body.appendChild(currentTooltip);
 
-        currentTooltip.querySelector(".text").innerHTML = tooltip;
+        currentTooltip.querySelector(".text").innerHTML = escapeHtml(tooltip);
         currentTooltip.style = `top: ${getOffset(badge).top - currentTooltip.clientHeight - 25}px; left: ${getOffset(badge).left - (currentTooltip.clientWidth / 2) + 10}px;`;
 
         requestAnimationFrame(() => currentTooltip.classList.remove("fade-out"));
@@ -193,7 +193,7 @@ async function addConnection(badgeAsset, tooltip) {
         currentTooltip.classList.add("fade-out");
         document.body.appendChild(currentTooltip);
 
-        currentTooltip.querySelector(".text").innerHTML = tooltip;
+        currentTooltip.querySelector(".text").innerHTML = escapeHtml(tooltip);
         currentTooltip.style = `top: ${getOffset(badge).top - currentTooltip.clientHeight - 15}px; left: ${getOffset(badge).left - (currentTooltip.clientWidth / 2) + 10}px;`;
 
         requestAnimationFrame(() => currentTooltip.classList.remove("fade-out"));
@@ -463,6 +463,6 @@ if (lanyardData.data.data.listening_to_spotify && lanyardData.data.data.activiti
 }*/
 
     // username
-    (await checkElement(".username")).innerHTML = userData.data.user.username;
-    (await checkElement(".discriminator")).innerHTML = "#" + userData.data.user.discriminator;
+    (await checkElement(".username")).innerHTML = escapeHtml(userData.data.user.username);
+    (await checkElement(".discriminator")).innerHTML = "#" + escapeHtml(userData.data.user.discriminator);
 })();
