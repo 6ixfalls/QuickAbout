@@ -311,8 +311,6 @@ function capitalizeFirstLetter(string) {
         userId: userid,
         socket: true,
         onPresenceUpdate: (presence) => {
-            console.log(presence);
-
             pronouns.innerHTML = presence.kv.pronouns;
             bioText.innerHTML = presence.kv.bio.replace(/\\n/g, "<br>");
             linkify(bioText);
