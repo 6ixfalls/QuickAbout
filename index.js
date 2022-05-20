@@ -333,11 +333,15 @@ function capitalizeFirstLetter(string) {
                         clearInterval(timestampTimeout);
                     }
                     spotify.style.display = "none";
-                    timestamp.style.display = "block";
-                    timestamp.innerHTML = elapsedTime(activity.timestamps.start) + " elapsed";
-                    timestampTimeout = setInterval(() => {
+                    if (activity.timestamps) {
+                        timestamp.style.display = "block";
                         timestamp.innerHTML = elapsedTime(activity.timestamps.start) + " elapsed";
-                    }, 900);
+                        timestampTimeout = setInterval(() => {
+                            timestamp.innerHTML = elapsedTime(activity.timestamps.start) + " elapsed";
+                        }, 900);
+                    } else {
+                        timestamp.style.display = "none";
+                    }
 
                     if (activity.details || activity.state || activity.assets) {
                         mainImage.parentNode.classList.remove("small");
