@@ -36,6 +36,71 @@ const checkElement = async selector => {
     return document.querySelector(selector);
 };
 
+const elapsedTime = (timestamp, endTime) => {
+    let startTime = timestamp;
+    if (!endTime)
+        endTime = Number(new Date());
+    let difference = (endTime - startTime) / 1000;
+
+    // we only calculate them, but we don't display them.
+    // this fixes a bug in the Discord API that does not send the correct timestamp to presence.
+    let daysDifference = Math.floor(difference / 60 / 60 / 24);
+    difference -= daysDifference * 60 * 60 * 24;
+
+    let hoursDifference = Math.floor(difference / 60 / 60);
+    difference -= hoursDifference * 60 * 60;
+
+    let minutesDifference = Math.floor(difference / 60);
+    difference -= minutesDifference * 60;
+
+    let secondsDifference = Math.floor(difference);
+
+    return `${hoursDifference >= 1 ? ("0" + hoursDifference).slice(-2) + ":" : ""}${("0" + minutesDifference).slice(
+        -2
+    )}:${("0" + secondsDifference).slice(-2)}`;
+};
+
+function escapeHtml(string) {
+    var str = '' + string
+    var match = /["'&<>]/.exec(str)
+    if (!match) {
+        return str
+    }
+    var escape
+    var html = ''
+    var index = 0
+    var lastIndex = 0
+    for (index = match.index; index < str.length; index++) {
+        switch (str.charCodeAt(index)) {
+            case 34: // "
+                escape = '&quot;'
+                break
+            case 38: // &
+                escape = '&amp;'
+                break
+            case 39: // '
+                escape = '&#39;'
+                break
+            case 60: // <
+                escape = '&lt;'
+                break
+            case 62: // >
+                escape = '&gt;'
+                break
+            default:
+                continue
+        }
+        if (lastIndex !== index) {
+            html += str.substring(lastIndex, index)
+        }
+        lastIndex = index + 1
+        html += escape
+    }
+    return lastIndex !== index
+        ? html + str.substring(lastIndex, index)
+        : html
+}
+
 function getFlags(flag) {
     let flags = [];
 
@@ -169,8 +234,207 @@ function capitalizeFirstLetter(string) {
     tooltipNode.style.display = "block";
     tooltip.remove();
 
+    let pronouns = await checkElement(".pronouns");
+    let bioText = await checkElement(".about .text");
+    let mainImage = await checkElement(".content .img .main");
+    let smallImage = await checkElement(".content .img .sub");
+    let activityTitle = await checkElement(".text .activitytitle");
+    let details = await checkElement(".text .details");
+    let state = await checkElement(".text .state");
+    let timestamp = await checkElement(".text .timestamp");
+    let spotify = await checkElement(".content .spotify");
+    let title = await checkElement(".user-status .title");
+    let userStatus = await checkElement(".user-status");
+
+    let large_tooltip;
+    let small_tooltip;
+    // setting up large_image and small_image tooltips
+    (async () => {
+        let currentLargeTooltip;
+
+        mainImage.addEventListener("mouseover", async () => {
+            if (large_tooltip == undefined) return;
+
+            currentLargeTooltip = tooltipNode.cloneNode(true);
+
+            currentLargeTooltip.classList.add("fade-out");
+            document.body.appendChild(currentLargeTooltip);
+
+            currentLargeTooltip.querySelector(".text").innerHTML = escapeHtml(large_tooltip);
+            currentLargeTooltip.style = `top: ${getOffset(mainImage).top - currentLargeTooltip.clientHeight - 25}px; left: ${getOffset(mainImage).left - (currentLargeTooltip.clientWidth / 2) + 10}px;`;
+
+            requestAnimationFrame(() => currentLargeTooltip.classList.remove("fade-out"));
+        });
+
+        mainImage.addEventListener("mouseout", () => {
+            if (currentLargeTooltip) {
+                currentLargeTooltip.classList.add("fade-out");
+                let oldTooltip = currentLargeTooltip;
+                currentLargeTooltip = null;
+                setTimeout(() => {
+                    oldTooltip.remove();
+                }, 100);
+            }
+        });
+
+        let currentSmallTooltip;
+
+        smallImage.addEventListener("mouseover", async () => {
+            if (small_tooltip == undefined) return;
+
+            currentSmallTooltip = tooltipNode.cloneNode(true);
+
+            currentSmallTooltip.classList.add("fade-out");
+            document.body.appendChild(currentSmallTooltip);
+
+            currentSmallTooltip.querySelector(".text").innerHTML = escapeHtml(small_tooltip);
+            currentSmallTooltip.style = `top: ${getOffset(smallImage).top - currentSmallTooltip.clientHeight - 25}px; left: ${getOffset(smallImage).left - (currentSmallTooltip.clientWidth / 2) + 10}px;`;
+
+            requestAnimationFrame(() => currentSmallTooltip.classList.remove("fade-out"));
+        });
+
+        smallImage.addEventListener("mouseout", () => {
+            if (currentSmallTooltip) {
+                currentSmallTooltip.classList.add("fade-out");
+                let oldTooltip = currentSmallTooltip;
+                currentSmallTooltip = null;
+                setTimeout(() => {
+                    oldTooltip.remove();
+                }, 100);
+            }
+        });
+    })();
+
     const userData = await axios(cdnURL);
-    const lanyardData = await axios(lanyardURL);
+    let timestampTimeout;
+    lanyard({
+        userId: userid,
+        socket: true,
+        onPresenceUpdate: (presence) => {
+            console.log(presence);
+
+            pronouns.innerHTML = presence.kv.pronouns;
+            bioText.innerHTML = presence.kv.bio.replace(/\\n/g, "<br>");
+            linkify(bioText);
+
+            document.documentElement.style.setProperty("--status-color", StatusMap[presence.discord_status]);
+
+            if (presence.activities.length > 0) {
+                userStatus.style.display = "block";
+                let activity = presence.activities[0];
+
+                if (activity.type === 0) {
+                    mainImage.classList.add("round");
+                    document.documentElement.style.setProperty("--status-bg", "#7289da");
+                    title.innerHTML = "Playing a game";
+                    large_tooltip = undefined;
+                    small_tooltip = undefined;
+
+                    activityTitle.querySelector("span").innerHTML = escapeHtml(activity.name);
+                    if (timestampTimeout) {
+                        clearInterval(timestampTimeout);
+                    }
+                    spotify.style.display = "none";
+                    timestamp.style.display = "block";
+                    timestamp.innerHTML = elapsedTime(activity.timestamps.start) + " elapsed";
+                    timestampTimeout = setInterval(() => {
+                        timestamp.innerHTML = elapsedTime(activity.timestamps.start) + " elapsed";
+                    }, 900);
+
+                    if (activity.details || activity.state || activity.assets) {
+                        mainImage.parentNode.classList.remove("small");
+                        mainImage.classList.remove("small");
+                    } else {
+                        mainImage.parentNode.classList.add("small");
+                        mainImage.classList.add("small");
+                    }
+
+                    if (activity.details) {
+                        details.innerHTML = escapeHtml(activity.details);
+                        details.style.display = "block";
+                    } else {
+                        details.style.display = "none";
+                    }
+
+                    if (activity.state) {
+                        state.innerHTML = escapeHtml(activity.state);
+                        state.style.display = "block";
+                    } else {
+                        state.style.display = "none";
+                    }
+
+                    if (activity.assets) {
+                        large_tooltip = escapeHtml(activity.assets.large_text);
+                        small_tooltip = escapeHtml(activity.assets.small_text);
+
+                        if (activity.assets.large_image) {
+                            mainImage.src = activity.assets.large_image.startsWith("mp:external/")
+                                ? `https://media.discordapp.net/external/${activity.assets.large_image.replace("mp:external/", "")}`
+                                : `https://cdn.discordapp.com/app-assets/${activity.application_id}/${activity.assets.large_image}.webp`;
+                        } else {
+                            mainImage.src = "images/unknown.png";
+                        }
+
+                        if (activity.assets.small_image) {
+                            mainImage.classList.add("mask");
+                            smallImage.style.display = "block";
+                            smallImage.src = activity.assets.small_image.startsWith("mp:external/")
+                                ? `https://media.discordapp.net/external/${activity.assets.small_image.replace("mp:external/", "")}`
+                                : `https://cdn.discordapp.com/app-assets/${activity.application_id}/${activity.assets.small_image}.webp`;
+                        } else {
+                            mainImage.classList.remove("mask");
+                            smallImage.style.display = "none";
+                        }
+                    } else {
+                        mainImage.src = `https://dcdn.dstn.to/app-icons/${activity.application_id}`;
+                        mainImage.classList.remove("mask");
+                        smallImage.style.display = "none";
+                    }
+                } else if (activity.type == "2") {
+                    document.documentElement.style.setProperty("--status-bg", "#1db653");
+                    title.innerHTML = "Listening to Spotify";
+                    mainImage.classList.remove("round");
+                    mainImage.classList.remove("mask");
+                    mainImage.parentNode.classList.remove("small");
+                    mainImage.classList.remove("small");
+                    smallImage.style.display = "none";
+                    mainImage.src = presence.spotify.album_art_url;
+
+                    large_tooltip = escapeHtml(presence.spotify.song);
+                    small_tooltip = undefined;
+
+                    activityTitle.querySelector("span").innerHTML = escapeHtml(presence.spotify.song);
+                    details.innerHTML = "by " + escapeHtml(presence.spotify.artist);
+                    details.style.display = "block";
+                    state.innerHTML = "on " + escapeHtml(presence.spotify.album);
+                    state.style.display = "block";
+                    if (timestampTimeout) {
+                        clearInterval(timestampTimeout);
+                    }
+                    let length = (presence.spotify.timestamps.end - presence.spotify.timestamps.start) / 1000;
+                    let elapsed = (Number(new Date()) - presence.spotify.timestamps.start) / 1000;
+                    spotify.querySelector(".inner").style.width = Math.min((elapsed / length) * 100, 100) + "%";
+                    spotify.querySelector(".start").innerHTML = elapsedTime(presence.spotify.timestamps.start);
+                    spotify.querySelector(".end").innerHTML = elapsedTime(presence.spotify.timestamps.start, presence.spotify.timestamps.end);
+
+                    timestampTimeout = setInterval(() => {
+                        let length = (presence.spotify.timestamps.end - presence.spotify.timestamps.start) / 1000;
+                        let elapsed = (Number(new Date()) - presence.spotify.timestamps.start) / 1000;
+                        spotify.querySelector(".inner").style.width = Math.min((elapsed / length) * 100, 100) + "%";
+                        spotify.querySelector(".start").innerHTML = elapsedTime(presence.spotify.timestamps.start);
+                    }, 900);
+                    spotify.style.display = "block";
+                    timestamp.style.display = "none";
+                }
+            } else {
+                if (timestampTimeout) {
+                    clearInterval(timestampTimeout);
+                }
+
+                userStatus.style.display = "none";
+            }
+        },
+    })
 
     for (const badgeFlag of getFlags(userData.data.user.flags || userData.data.user.public_flags || 0)) {
         addBadge(badgeFlag, descriptions[badgeFlag]);
@@ -188,23 +452,15 @@ function capitalizeFirstLetter(string) {
     if (userData.data.user.banner)
         addBadge(getBoostFlagForTimestamp(userData.data.premium_since), `Server boosting since ${moment(userData.data.premium_since).format("MMM D, YYYY")} (Estimated)`);
 
-    if (lanyardData.data.data.listening_to_spotify && lanyardData.data.data.activities.length == 1) {
-        document.documentElement.style.setProperty("--status-bg", "#1db653");
-        (await checkElement(".user-status .title")).innerHTML = "Listening to Spotify";
-    } else if (lanyardData.data.data.activities.length == 0) {
-        (await checkElement(".user-status .title")).remove();
-    }
+    /*
+if (lanyardData.data.data.listening_to_spotify && lanyardData.data.data.activities.length == 1) {
+    document.documentElement.style.setProperty("--status-bg", "#1db653");
+    (await checkElement(".user-status .title")).innerHTML = "Listening to Spotify";
+} else if (lanyardData.data.data.activities.length == 0) {
+    (await checkElement(".user-status .title")).remove();
+}*/
 
     // username
     (await checkElement(".username")).innerHTML = userData.data.user.username;
     (await checkElement(".discriminator")).innerHTML = "#" + userData.data.user.discriminator;
-
-    let pronouns = await checkElement(".pronouns");
-    pronouns.innerHTML = lanyardData.data.data.kv.pronouns;
-
-    let bioText = await checkElement(".about .text");
-    bioText.innerHTML = lanyardData.data.data.kv.bio.replace(/\\n/g, "<br>");
-    linkify(bioText);
-
-    document.documentElement.style.setProperty("--status-color", StatusMap[lanyardData.data.data.discord_status]);
 })();

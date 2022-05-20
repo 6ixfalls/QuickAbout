@@ -10,6 +10,11 @@ body {
     font-family: 'Inter', sans-serif;
 }
 
+.break {
+    flex-basis: 100%;
+    height: 0;
+}
+
 .popout {
     width: 300px;
     box-shadow: 0 0 10px 0 #101320d2;
@@ -239,6 +244,7 @@ body {
     position: relative;
     top: 15px;
     user-select: none;
+    padding-bottom: 12px;
 }
 
 .user-status img {
@@ -264,7 +270,7 @@ body {
     height: 21px;
     width: 100%;
     left: 0;
-    margin-top: -20px;
+    margin-top: -19px;
     background-color: var(--status-bg);
     -webkit-mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="268" height="21" viewBox="0 0 268 21"><path d="M0 21V7.19143C0 7.19143 35.3844 -2.31216 79.4578 0.530784C126.044 1.7492 142.689 13.564 202.466 14.5019C242.561 14.5019 268 7.35388 268 7.35388V21H0Z"/></svg>');
     animation: animate 6s linear infinite;
@@ -285,6 +291,126 @@ body {
     stroke: #101320;
     stroke-width: 4px;
     fill: var(--status-color);
+}
+
+.user-status .content .img {
+    position: relative;
+    align-self: flex-start;
+    display: block;
+    margin-left: 12px;
+    width: 60px;
+    height: 60px;
+}
+
+.user-status .content .img.small {
+    width: 40px;
+    height: 40px;
+}
+
+.user-status .content .img .main {
+    width: 60px;
+    height: 60px;
+    border: solid 0.5pxx #222;
+}
+
+.user-status .content .img .main.round {
+    border-radius: 10px;
+}
+
+.user-status .content .img .main.small {
+    width: 40px;
+    height: 40px;
+}
+
+.user-status .content .img .main.mask {
+    -webkit-mask: url("assets/masks/large_image_mask.svg");
+    mask: url("assets/masks/large_image_mask.svg");
+}
+
+.user-status .content .img .sub {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    position: absolute;
+    bottom: -4px;
+    right: -4px;
+}
+
+.user-status .content {
+    display: flex;
+    flex-wrap: wrap;
+    color: #fff;
+    padding-bottom: 8px;
+}
+
+.user-status .content .text {
+    margin-left: 10px;
+}
+
+.user-status .content .text .activitytitle {
+    display: block;
+    font-size: 12px;
+    line-height: 18px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.user-status .content .text div {
+    display: block;
+    font-size: 12px;
+    line-height: 18px;
+    font-weight: 400;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.user-status .spotify {
+    margin-top: 12px;
+    margin-left: 12px;
+    display: block;
+    width: 92%;
+}
+
+.user-status .spotify .bar {
+    height: 4px;
+    background-color: rgba(79, 84, 92, .16);
+    min-width: 4px;
+    border-radius: 2px;
+    margin-bottom: 4px;
+}
+
+.user-status .spotify .bar .inner {
+    width: 50%;
+    height: 100%;
+    background-color: #fff;
+    border-radius: 2px;
+}
+
+.user-status .spotify .text {
+    margin: 0;
+    display: flex;
+    align-items: baseline;
+    flex-direction: row;
+    flex: 1 1 auto;
+    color: hsla(0, 0%, 100%, .8);
+    font-size: 11px;
+}
+
+.user-status .spotify .text .start {
+    flex: 1 1 auto;
+    font-size: inherit;
+}
+
+.user-status .spotify .text .end {
+    flex: 0 1 auto;
+    font-size: inherit;
 }
 
 @keyframes animate {
