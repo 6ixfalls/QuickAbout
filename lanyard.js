@@ -38,13 +38,13 @@ async function lanyard(opts) {
         });
 
         socket.addEventListener("message", ({ data, origin }) => {
-            //if (origin == CONSTANTS.ORIGIN) {
+            if (origin == CONSTANTS.ORIGIN) {
                 const { t, d } = JSON.parse(data)
 
                 if (t === "INIT_STATE" || t === "PRESENCE_UPDATE") {
                     opts.onPresenceUpdate(d)
                 }
-            //}
+            }
         });
 
         return socket;
