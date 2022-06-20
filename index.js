@@ -280,7 +280,9 @@ function capitalizeFirstLetter(string) {
 
             if (presence.activities.length > 0) {
                 userStatus.style.display = "block";
-                let activity = presence.activities[0];
+                let activity = presence.activities.find(activity => activity.type === 0 || activity.type === 2);
+
+                if (!activity) activity = presence.activities[0];
 
                 if (activity.type === 0) {
                     mainImage.classList.add("round");
@@ -388,6 +390,12 @@ function capitalizeFirstLetter(string) {
                     }, 900);
                     spotify.style.display = "block";
                     timestamp.style.display = "none";
+                } else if (activity.type === 4) {
+                    if (timestampTimeout) {
+                        clearInterval(timestampTimeout);
+                    }
+
+                    userStatus.style.display = "none";
                 }
             } else {
                 if (timestampTimeout) {
