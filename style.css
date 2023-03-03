@@ -206,6 +206,15 @@ body {
     color: #dcddde;
 }
 
+.about .text a {
+    color: rgb(0, 170, 252);
+    text-decoration: none;
+}
+
+.about .text a:hover {
+    text-decoration: underline;
+}
+
 .header .pronouns {
     color: #b9bbbe;
     display: flex;
