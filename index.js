@@ -433,5 +433,4 @@ if (lanyardData.data.data.listening_to_spotify && lanyardData.data.data.activiti
 
     // username
     (await checkElement(".username")).innerHTML = _.escape(userData.data.user.username);
-    (await checkElement(".discriminator")).innerHTML = "#" + _.escape(userData.data.user.discriminator);
 })();
