@@ -20,7 +20,8 @@ const descriptions = {
     "bughunter_2": "Discord Bug Hunter",
     "developer": "Early Verified Bot Developer",
     "early_supporter": "Early Supporter",
-    "moderator": "Discord Certified Moderator"
+    "moderator": "Discord Certified Moderator",
+    "active_developer": "Active Developer"
 };
 
 const StatusMap = {
@@ -76,6 +77,7 @@ function getFlags(flag) {
     if (flag & 16384) flags.push("bughunter_2");
     if (flag & 131072) flags.push("developer");
     if (flag & 262144) flags.push("moderator");
+    if (flag & 4194304) flags.push("active_developer");
 
     return flags;
 };
