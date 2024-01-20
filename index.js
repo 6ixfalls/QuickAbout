@@ -7,7 +7,6 @@ const lanyardURL = `https://api.lanyard.rest/v1/users/${userid}/`;
 
 let badgesContainer;
 let connectionsContainer;
-let tooltipNode;
 
 const descriptions = {
     "staff": "Discord Staff",
@@ -30,19 +29,19 @@ const StatusMap = {
     "dnd": "#F04747",
     "offline": "#747F8D",
     "streaming": "#593695"
-}
-
-const checkElement = async selector => {
-    while (document.querySelector(selector) === null) {
-        await new Promise(resolve => { requestAnimationFrame(resolve) })
-    }
-    return document.querySelector(selector);
 };
 
-const elapsedTime = (timestamp, endTime) => {
+async function checkElement(selector) {
+    while (document.querySelector(selector) === null) {
+        await new Promise(requestAnimationFrame);
+    }
+    return document.querySelector(selector);
+}
+
+function elapsedTime(timestamp, endTime) {
     let startTime = timestamp;
-    if (!endTime)
-        endTime = Number(new Date());
+    if (!endTime) endTime = Number(new Date());
+
     let difference = (endTime - startTime) / 1000;
 
     // we only calculate them, but we don't display them.
@@ -61,7 +60,7 @@ const elapsedTime = (timestamp, endTime) => {
     return `${hoursDifference >= 1 ? ("0" + hoursDifference).slice(-2) + ":" : ""}${("0" + minutesDifference).slice(
         -2
     )}:${("0" + secondsDifference).slice(-2)}`;
-};
+}
 
 function getFlags(flag) {
     let flags = [];
@@ -80,10 +79,10 @@ function getFlags(flag) {
     if (flag & 4194304) flags.push("active_developer");
 
     return flags;
-};
+}
 
 function getBoostFlagForTimestamp(timestamp) {
-    const timeDate = Math.ceil(moment().diff(moment(timestamp), 'months', true));
+    const timeDate = Math.ceil(moment().diff(moment(timestamp), "months", true));
 
     if (timeDate >= 24)
         return "booster_9";
@@ -105,40 +104,11 @@ function getBoostFlagForTimestamp(timestamp) {
         return "booster_1";
 }
 
-function getOffset(el) {
-    var rect = el.getBoundingClientRect();
-    return { top: rect.top, left: rect.left };
-}
-
 async function addBadge(badgeAsset, tooltip) {
     const badge = document.createElement("div");
     badge.style = `background-image: url("assets/badges/${badgeAsset}.svg");`;
-    badge.className = "badge";
-
-    let currentTooltip;
-
-    badge.addEventListener("mouseover", async () => {
-        currentTooltip = tooltipNode.cloneNode(true);
-
-        currentTooltip.classList.add("fade-out");
-        document.body.appendChild(currentTooltip);
-
-        currentTooltip.querySelector(".text").innerHTML = _.escape(tooltip);
-        currentTooltip.style = `top: ${getOffset(badge).top - currentTooltip.clientHeight - 25}px; left: ${getOffset(badge).left - (currentTooltip.clientWidth / 2) + 10}px;`;
-
-        requestAnimationFrame(() => currentTooltip.classList.remove("fade-out"));
-    });
-
-    badge.addEventListener("mouseout", () => {
-        if (currentTooltip) {
-            currentTooltip.classList.add("fade-out");
-            let oldTooltip = currentTooltip;
-            currentTooltip = null;
-            setTimeout(() => {
-                oldTooltip.remove();
-            }, 100);
-        }
-    });
+    badge.className = "badge tippy";
+    badge.dataset.tippyContent = tooltip;
 
     badgesContainer.appendChild(badge);
 }
@@ -146,32 +116,8 @@ async function addBadge(badgeAsset, tooltip) {
 async function addConnection(badgeAsset, tooltip) {
     const badge = document.createElement("div");
     badge.style = `background-image: url("assets/connections/${badgeAsset}.svg");`;
-    badge.className = "badge";
-
-    let currentTooltip;
-
-    badge.addEventListener("mouseover", async () => {
-        currentTooltip = tooltipNode.cloneNode(true);
-
-        currentTooltip.classList.add("fade-out");
-        document.body.appendChild(currentTooltip);
-
-        currentTooltip.querySelector(".text").innerHTML = _.escape(tooltip);
-        currentTooltip.style = `top: ${getOffset(badge).top - currentTooltip.clientHeight - 15}px; left: ${getOffset(badge).left - (currentTooltip.clientWidth / 2) + 10}px;`;
-
-        requestAnimationFrame(() => currentTooltip.classList.remove("fade-out"));
-    });
-
-    badge.addEventListener("mouseout", () => {
-        if (currentTooltip) {
-            currentTooltip.classList.add("fade-out");
-            let oldTooltip = currentTooltip;
-            currentTooltip = null;
-            setTimeout(() => {
-                oldTooltip.remove();
-            }, 100);
-        }
-    });
+    badge.className = "badge tippy";
+    badge.dataset.tippyContent = tooltip;
 
     connectionsContainer.appendChild(badge);
 }
@@ -192,11 +138,6 @@ function capitalizeFirstLetter(string) {
     badgesContainer = await checkElement(".badges#badges");
     connectionsContainer = await checkElement(".connections#connections");
 
-    let tooltip = await checkElement(".tooltip");
-    tooltipNode = tooltip.cloneNode(true);
-    tooltipNode.style.display = "block";
-    tooltip.remove();
-
     let pronouns = await checkElement(".pronouns");
     let bioText = await checkElement(".about .text");
     let mainImage = await checkElement(".content .img .main");
@@ -208,65 +149,6 @@ function capitalizeFirstLetter(string) {
     let spotify = await checkElement(".content .spotify");
     let title = await checkElement(".user-status .title");
     let userStatus = await checkElement(".user-status");
-
-    let large_tooltip;
-    let small_tooltip;
-    // setting up large_image and small_image tooltips
-    (async () => {
-        let currentLargeTooltip;
-
-        mainImage.addEventListener("mouseover", async () => {
-            if (large_tooltip == undefined) return;
-
-            currentLargeTooltip = tooltipNode.cloneNode(true);
-
-            currentLargeTooltip.classList.add("fade-out");
-            document.body.appendChild(currentLargeTooltip);
-
-            currentLargeTooltip.querySelector(".text").innerHTML = _.escape(large_tooltip);
-            currentLargeTooltip.style = `top: ${getOffset(mainImage).top - currentLargeTooltip.clientHeight - 25}px; left: ${getOffset(mainImage).left - (currentLargeTooltip.clientWidth / 2) + 10}px;`;
-
-            requestAnimationFrame(() => currentLargeTooltip.classList.remove("fade-out"));
-        });
-
-        mainImage.addEventListener("mouseout", () => {
-            if (currentLargeTooltip) {
-                currentLargeTooltip.classList.add("fade-out");
-                let oldTooltip = currentLargeTooltip;
-                currentLargeTooltip = null;
-                setTimeout(() => {
-                    oldTooltip.remove();
-                }, 100);
-            }
-        });
-
-        let currentSmallTooltip;
-
-        smallImage.addEventListener("mouseover", async () => {
-            if (small_tooltip == undefined) return;
-
-            currentSmallTooltip = tooltipNode.cloneNode(true);
-
-            currentSmallTooltip.classList.add("fade-out");
-            document.body.appendChild(currentSmallTooltip);
-
-            currentSmallTooltip.querySelector(".text").innerHTML = _.escape(small_tooltip);
-            currentSmallTooltip.style = `top: ${getOffset(smallImage).top - currentSmallTooltip.clientHeight - 25}px; left: ${getOffset(smallImage).left - (currentSmallTooltip.clientWidth / 2) + 10}px;`;
-
-            requestAnimationFrame(() => currentSmallTooltip.classList.remove("fade-out"));
-        });
-
-        smallImage.addEventListener("mouseout", () => {
-            if (currentSmallTooltip) {
-                currentSmallTooltip.classList.add("fade-out");
-                let oldTooltip = currentSmallTooltip;
-                currentSmallTooltip = null;
-                setTimeout(() => {
-                    oldTooltip.remove();
-                }, 100);
-            }
-        });
-    })();
 
     const userData = await axios(cdnURL);
     let timestampTimeout;
@@ -290,8 +172,8 @@ function capitalizeFirstLetter(string) {
                     mainImage.classList.add("round");
                     document.documentElement.style.setProperty("--status-bg", "#7289da");
                     title.innerHTML = "Playing a game";
-                    large_tooltip = undefined;
-                    small_tooltip = undefined;
+                    mainImage._tippy.setContent(undefined);
+                    smallImage._tippy.setContent(undefined);
 
                     activityTitle.querySelector("span").innerHTML = _.escape(activity.name);
                     if (timestampTimeout) {
@@ -331,8 +213,8 @@ function capitalizeFirstLetter(string) {
                     }
 
                     if (activity.assets) {
-                        large_tooltip = _.escape(activity.assets.large_text);
-                        small_tooltip = _.escape(activity.assets.small_text);
+                        mainImage._tippy.setContent(_.escape(activity.assets.large_text));
+                        smallImage._tippy.setContent(_.escape(activity.assets.small_text));
 
                         if (activity.assets.large_image) {
                             mainImage.src = activity.assets.large_image.startsWith("mp:external/")
@@ -367,8 +249,8 @@ function capitalizeFirstLetter(string) {
                     smallImage.style.display = "none";
                     mainImage.src = presence.spotify.album_art_url;
 
-                    large_tooltip = _.escape(presence.spotify.song);
-                    small_tooltip = undefined;
+                    mainImage._tippy.setContent(_.escape(presence.spotify.song));
+                    smallImage._tippy.setContent(undefined);
 
                     activityTitle.querySelector("span").innerHTML = _.escape(presence.spotify.song);
                     details.innerHTML = "by " + _.escape(presence.spotify.artist);
@@ -423,16 +305,46 @@ function capitalizeFirstLetter(string) {
         addBadge("nitro", `Subscriber since ${moment(userData.data.premium_since).format("MMM D, YYYY")}`);
 
     if (userData.data.user.banner)
-        addBadge(getBoostFlagForTimestamp(userData.data.premium_since), `Server boosting since ${moment(userData.data.premium_since).format("MMM D, YYYY")} (Estimated)`);
-
-    /*
-if (lanyardData.data.data.listening_to_spotify && lanyardData.data.data.activities.length == 1) {
-    document.documentElement.style.setProperty("--status-bg", "#1db653");
-    (await checkElement(".user-status .title")).innerHTML = "Listening to Spotify";
-} else if (lanyardData.data.data.activities.length == 0) {
-    (await checkElement(".user-status .title")).remove();
-}*/
+        addBadge(getBoostFlagForTimestamp(userData.data.premium_guild_since), `Server boosting since ${moment(userData.data.premium_guild_since).format("MMM D, YYYY")}`);
 
     // username
     (await checkElement(".username")).innerHTML = _.escape(userData.data.user.username);
+
+    tippy(".tippy", {
+        animation: true,
+        render(instance) {
+            const popper = document.createElement("div");
+            const tooltip = document.createElement("div");
+            tooltip.className = "tooltip";
+            const arrow = document.createElement("div");
+            arrow.className = "arrow";
+            const text = document.createElement("div");
+            text.className = "text";
+            text.textContent = _.escape(instance.props.content);
+            tooltip.appendChild(arrow);
+            tooltip.appendChild(text);
+            popper.appendChild(tooltip);
+
+            function onUpdate(prevProps, nextProps) {
+                if (prevProps.content !== nextProps.content) {
+                    text.textContent = _.escape(nextProps.content);
+                }
+            }
+
+            return {
+                popper,
+                onUpdate,
+            };
+        },
+        onShow(instance) {
+            instance.popper.querySelector(".tooltip").classList.add("fade-out");
+            requestAnimationFrame(() => instance.popper.querySelector(".tooltip").classList.remove("fade-out"));
+        },
+        onHide(instance) {
+            instance.popper.querySelector(".tooltip").classList.add("fade-out");
+            setTimeout(() => {
+                instance.unmount();
+            }, 100);
+        }
+    });
 })();

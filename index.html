@@ -1,89 +1,100 @@
 <!DOCTYPE html>
 <html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>sixfalls</title>
+        <link
+            rel="shortcut icon"
+            type="image/png"
+            href="https://dcdn.dstn.to/avatars/303173495918034945"
+        />
+        <link rel="stylesheet" href="style.css" />
 
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>sixfalls</title>
-    <link rel="shortcut icon" type="image/png" href="https://dcdn.dstn.to/avatars/303173495918034945" />
-    <link rel="stylesheet" href="style.css">
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content="Six" />
+        <meta property="og:title" content="sixfalls" />
+        <meta property="og:description" content="Hey, I'm Six!" />
+        <meta name="theme-color" content="#E54B4B" />
+        <meta
+            property="og:image"
+            itemprop="image primaryImageOfPage"
+            content="https://dcdn.dstn.to/avatars/303173495918034945"
+        />
+        <meta name="keywords" content="six, sixfalls, hvrtlvs" />
 
-    <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="Six" />
-    <meta property="og:title" content="sixfalls" />
-    <meta property="og:description" content="Hey, I'm Six!" />
-    <meta name="theme-color" content="#E54B4B">
-    <meta property="og:image" itemprop="image primaryImageOfPage"
-        content="https://dcdn.dstn.to/avatars/303173495918034945" />
-    <meta name="keywords" content="six, sixfalls, hvrtlvs">
+        <script src="https://cdn.jsdelivr.net/npm/moment@2.30.1/min/moment.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/axios@1.6.5/dist/axios.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/tippy.js@6.3.7/headless/dist/tippy-headless.umd.min.js"></script>
+        <script src="lanyard.js"></script>
+    </head>
 
-    <script src="https://cdn.jsdelivr.net/npm/moment@2.29.2/min/moment.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/axios@0.26.1/dist/axios.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
-    <script src="lanyard.js"></script>
-</head>
-
-<body>
-    <div class="popout">
-        <div class="banner"></div>
-        <div class="profile"><img src="https://dcdn.dstn.to/avatars/303173495918034945" />
-        </div>
-        <div class="status">
-            <svg width="24" height="24" viewBox="0 0 24 24">
-                <rect width="20" height="20" x="2" y="2"
-                    fill="hsl(359, calc(var(--saturation-factor, 1) * 82.6%), 59.4%)" class="status-rect"></rect>
-            </svg>
-        </div>
-        <div class="header">
-            <div class="badges" id="badges"></div>
-            <div class="tag"><span class="username">sixfalls</span></div>
-            <div class="pronouns">?/?</div>
-        </div>
-        <div class="about">
-            <div class="title">About Me</div>
-            <div class="text" id="about">
+    <body>
+        <div class="popout">
+            <div class="banner"></div>
+            <div class="profile">
+                <img src="https://dcdn.dstn.to/avatars/303173495918034945" />
             </div>
-        </div>
-        <div class="about">
-            <div class="title">Connections</div>
-            <div class="connections" id="connections">
+            <div class="status">
+                <svg width="24" height="24" viewBox="0 0 24 24">
+                    <rect
+                        width="20"
+                        height="20"
+                        x="2"
+                        y="2"
+                        fill="hsl(359, calc(var(--saturation-factor, 1) * 82.6%), 59.4%)"
+                        class="status-rect"
+                    ></rect>
+                </svg>
             </div>
-        </div>
-        <div class="user-status" style="display:none;">
-            <div class="bef"></div>
-            <div class="title">Playing A Game</div>
-            <div class="content">
-                <div class="img">
-                    <img class="main" src="" />
-                    <img class="sub mask" src="" />
-                </div>
-                <div class="text">
-                    <h3 class="activitytitle"><span></span></h3>
-                    <div class="details"></div>
-                    <div class="state"></div>
-                    <div class="timestamp"></div>
-                </div>
-                <div class="break"></div>
-                <div class="spotify" style="display:none;">
-                    <div class="bar">
-                        <div class="inner"></div>
+            <div class="header">
+                <div class="badges" id="badges"></div>
+                <div class="tag"><span class="username">sixfalls</span></div>
+                <div class="pronouns">?/?</div>
+            </div>
+            <div class="about">
+                <div class="title">About Me</div>
+                <div class="text" id="about"></div>
+            </div>
+            <div class="about">
+                <div class="title">Connections</div>
+                <div class="connections" id="connections"></div>
+            </div>
+            <div class="user-status" style="display: none">
+                <div class="bef"></div>
+                <div class="title">Playing A Game</div>
+                <div class="content">
+                    <div class="img">
+                        <img class="main tippy" src="" />
+                        <img class="sub tippy mask" src="" />
                     </div>
                     <div class="text">
-                        <div class="start"></div>
-                        <div class="end"></div>
+                        <h3 class="activitytitle"><span></span></h3>
+                        <div class="details"></div>
+                        <div class="state"></div>
+                        <div class="timestamp"></div>
+                    </div>
+                    <div class="break"></div>
+                    <div class="spotify" style="display: none">
+                        <div class="bar">
+                            <div class="inner"></div>
+                        </div>
+                        <div class="text">
+                            <div class="start"></div>
+                            <div class="end"></div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-    </div>
-    <div class="tooltip" style="top: 0; left: 0; display: none;">
-        <div class="arrow"></div>
-        <div class="text">Server boosting since Jan 4, 2021. Now restored to the oldest streak!</div>
-    </div>
-</body>
+        <footer class="credits">
+            <a href="https://github.com/6ixfalls/QuickAbout">QuickAbout</a>
+            &bull; Made by <a href="https://sixfal.ls/">sixfalls</a>
+        </footer>
+    </body>
 
-<script src="index.js"></script>
-
+    <script src="index.js"></script>
 </html>

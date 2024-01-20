@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
 
 :root {
     --status-bg: #7289da;
@@ -6,8 +6,8 @@
 }
 
 body {
-    background-color: #23283D;
-    font-family: 'Inter', sans-serif;
+    background-color: #23283d;
+    font-family: "Inter", sans-serif;
 }
 
 .break {
@@ -41,7 +41,7 @@ body {
     background-position: center center;
     width: 300px;
     position: relative;
-    transition: background-color .1s;
+    transition: background-color 0.1s;
 }
 
 .profile {
@@ -133,8 +133,6 @@ body {
     background-color: #101320;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.24);
     color: #dcddde;
-    transform-origin: 50% 100%;
-    position: absolute;
     border-radius: 5px;
     font-weight: 500;
     font-size: 14px;
@@ -143,7 +141,7 @@ body {
     box-sizing: border-box;
     word-wrap: break-word;
     z-index: 1002;
-    transition: opacity .1s, transform .1s;
+    transition: opacity 0.1s, transform 0.1s;
     will-change: opacity, transform;
     pointer-events: none;
 }
@@ -267,7 +265,7 @@ body {
     width: 100%;
     left: 0;
     margin-top: -20px;
-    background-color: #1E2233;
+    background-color: #1e2233;
     -webkit-mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="268" height="21" viewBox="0 0 268 21"><path d="M0 21V7.19143C0 7.19143 35.3844 -2.31216 79.4578 0.530784C126.044 1.7492 142.689 13.564 202.466 14.5019C242.561 14.5019 268 7.35388 268 7.35388V21H0Z"/></svg>');
     animation: animate2 6s linear infinite;
     animation-delay: 0s;
@@ -389,7 +387,7 @@ body {
 
 .user-status .spotify .bar {
     height: 4px;
-    background-color: rgba(79, 84, 92, .16);
+    background-color: rgba(79, 84, 92, 0.16);
     min-width: 4px;
     border-radius: 2px;
     margin-bottom: 4px;
@@ -408,7 +406,7 @@ body {
     align-items: baseline;
     flex-direction: row;
     flex: 1 1 auto;
-    color: hsla(0, 0%, 100%, .8);
+    color: hsla(0, 0%, 100%, 0.8);
     font-size: 11px;
 }
 
@@ -420,6 +418,24 @@ body {
 .user-status .spotify .text .end {
     flex: 0 1 auto;
     font-size: inherit;
+}
+
+.credits {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 10px;
+    color: hsla(0, 0%, 100%, 0.5);
+    font-size: 13px;
+}
+
+.credits a {
+    color: hsla(228, 27%, 40%);
+    text-decoration: none;
 }
 
 @keyframes animate {
