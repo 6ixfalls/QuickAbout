@@ -299,8 +299,6 @@ function capitalizeFirstLetter(string) {
         addConnection(account.type, capitalizeFirstLetter(account.type) + ": " + account.name);
     }
 
-    addConnection("roblox", "Roblox: hvrtlvs");
-
     if (userData.data.premium_since)
         addBadge("nitro", `Subscriber since ${moment(userData.data.premium_since).format("MMM D, YYYY")}`);
 
