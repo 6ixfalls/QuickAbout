@@ -202,6 +202,7 @@ body {
     line-height: 18px;
     font-weight: 400;
     color: #dcddde;
+    white-space: pre-line;
 }
 
 .about .text a {

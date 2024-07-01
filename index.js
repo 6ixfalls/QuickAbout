@@ -305,7 +305,7 @@ function capitalizeFirstLetter(string) {
     (await checkElement(".username")).innerHTML = _.escape(userData.data.user.username);
 
     pronouns.innerHTML = _.escape(userData.data.user_profile.pronouns);
-    bioText.innerHTML = userData.data.user_profile.bio.replace(/\\n/g, "<br>");
+    bioText.innerHTML = _.escape(userData.data.user_profile.bio);
     linkify(bioText);
 
     tippy(".tippy", {
