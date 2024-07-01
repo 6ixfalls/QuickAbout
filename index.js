@@ -156,10 +156,6 @@ function capitalizeFirstLetter(string) {
         userId: userid,
         socket: true,
         onPresenceUpdate: (presence) => {
-            pronouns.innerHTML = presence.kv.pronouns;
-            bioText.innerHTML = presence.kv.bio.replace(/\\n/g, "<br>");
-            linkify(bioText);
-
             document.documentElement.style.setProperty("--status-color", StatusMap[presence.discord_status]);
 
             if (presence.activities.length > 0) {
@@ -307,6 +303,10 @@ function capitalizeFirstLetter(string) {
 
     // username
     (await checkElement(".username")).innerHTML = _.escape(userData.data.user.username);
+
+    pronouns.innerHTML = _.escape(userData.data.user_profile.pronouns);
+    bioText.innerHTML = userData.data.user_profile.bio.replace(/\\n/g, "<br>");
+    linkify(bioText);
 
     tippy(".tippy", {
         animation: true,
